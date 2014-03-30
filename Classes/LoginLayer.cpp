@@ -56,11 +56,11 @@ bool LoginLayer::init()
 }
 
 
-void LoginLayer::ccTouchesEnded(cocos2d::CCSet *pTouches, cocos2d::CCEvent *pEvent)
+void LoginLayer::ccTouchesBegan(cocos2d::CCSet *pTouches, cocos2d::CCEvent *pEvent)
 {
 	m_pUILayer = TouchGroup::create();
 	m_pUILayer->scheduleUpdate();
-	this->addChild(m_pUILayer, 1);
+	this->addChild(m_pUILayer, 0);
 
 	// register root from json
 	m_pLayout = dynamic_cast<Layout*>(GUIReader::shareReader()->widgetFromJsonFile("Gui/Login_1/Login_1.json"));
@@ -79,8 +79,8 @@ void LoginLayer::ccTouchesEnded(cocos2d::CCSet *pTouches, cocos2d::CCEvent *pEve
 
 void LoginLayer::menuCloseCallback(CCObject* pSender, TouchEventType type)
 {
-	Layout* login_pLayout = static_cast<Layout*>(m_pUILayer->getWidgetByName("Panel_Login"));
-	login_pLayout->setVisible(false);
+	this->removeChild(m_pUILayer);
+
 	//	if (type == TOUCH_EVENT_ENDED)
 	//	{
 	//		CCDirector::sharedDirector()->end();

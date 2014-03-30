@@ -19,7 +19,10 @@ public:
 
 	void textFieldEvent(cocos2d::CCObject* pSender, cocos2d::ui::TextFiledEventType type);
 
-	virtual void ccTouchesEnded(cocos2d::CCSet *pTouches, cocos2d::CCEvent *pEvent);
+	
+	virtual void ccTouchesBegan(cocos2d::CCSet *pTouches, cocos2d::CCEvent *pEvent);
+
+	//virtual void ccTouchesEnded(cocos2d::CCSet *pTouches, cocos2d::CCEvent *pEvent);
 	
 protected:
 	cocos2d::ui::TouchGroup* m_pUILayer;
