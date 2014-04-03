@@ -7,6 +7,15 @@
     <Filter Include="Classes">
       <UniqueIdentifier>{bb6c862e-70e9-49d9-81b7-3829a6f50471}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\GameScene">
+      <UniqueIdentifier>{6fbee356-bdd5-4408-9fe7-de4f5c4afd79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\LoginScene">
+      <UniqueIdentifier>{d1fbc5f3-c88b-47b3-8816-30ea22ff3653}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Entity">
+      <UniqueIdentifier>{34d706c0-2cae-493b-aadd-fba12920a098}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -18,11 +27,26 @@
     <ClCompile Include="..\Classes\HelloWorldScene.cpp">
       <Filter>Classes</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\LoginScene.cpp">
-      <Filter>Classes</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\LoginLayer.cpp">
-      <Filter>Classes</Filter>
+      <Filter>Classes\LoginScene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\LoginScene.cpp">
+      <Filter>Classes\LoginScene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\SettingScene.cpp">
+      <Filter>Classes\LoginScene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\SnagForestScene.cpp">
+      <Filter>Classes\GameScene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\SnagForestLayer.cpp">
+      <Filter>Classes\GameScene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Entity.cpp">
+      <Filter>Classes\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Ball.cpp">
+      <Filter>Classes\Entity</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -35,12 +59,27 @@
     <ClInclude Include="..\Classes\HelloWorldScene.h">
       <Filter>Classes</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\LoginScene.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h" />
     <ClInclude Include="..\Classes\LoginLayer.h">
-      <Filter>Classes</Filter>
+      <Filter>Classes\LoginScene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\LoginScene.h">
+      <Filter>Classes\LoginScene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\SettingScene.h">
+      <Filter>Classes\LoginScene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\SnagForestScene.h">
+      <Filter>Classes\GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\SnagForestLayer.h">
+      <Filter>Classes\GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Entity.h">
+      <Filter>Classes\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Ball.h">
+      <Filter>Classes\Entity</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

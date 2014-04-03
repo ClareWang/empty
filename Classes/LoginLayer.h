@@ -4,6 +4,10 @@
 #include "cocos2d.h"
 #include "cocos-ext.h"
 
+#include "SettingScene.h"
+#include "SnagForestScene.h"
+
+
 class LoginLayer: public cocos2d::CCLayer 
 {
 public:	
