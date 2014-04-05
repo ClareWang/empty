@@ -20,7 +20,9 @@ bool SnagForestScene::init()
 	do 
 	{
 		CC_BREAK_IF(!CCScene::init());
-		_snagForestLayer = SnagForestLayer::create();
+		_snagForestLayer = new SnagForestLayer();
+		_snagForestLayer->initWithEntryID(0);
+		_snagForestLayer->autorelease();
 		this->addChild(_snagForestLayer);
 
 		bRet = true;

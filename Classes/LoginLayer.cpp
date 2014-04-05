@@ -82,6 +82,9 @@ void LoginLayer::menuCloseCallback(CCObject* pSender, TouchEventType type)
 
 
 	//CCDirector::sharedDirector()->replaceScene(SettingScene::scene());
+
+
+
 	CCDirector::sharedDirector()->replaceScene(SnagForestScene::create());
 
 	//	if (type == TOUCH_EVENT_ENDED)

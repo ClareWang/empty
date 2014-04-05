@@ -133,7 +133,10 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
   <ItemGroup>
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
     <ClCompile Include="..\Classes\Ball.cpp" />
+    <ClCompile Include="..\Classes\Box2dWorld.cpp" />
     <ClCompile Include="..\Classes\Entity.cpp" />
+    <ClCompile Include="..\Classes\GameEntries.cpp" />
+    <ClCompile Include="..\Classes\GLES-Render.cpp" />
     <ClCompile Include="..\Classes\HelloWorldScene.cpp" />
     <ClCompile Include="..\Classes\LoginLayer.cpp" />
     <ClCompile Include="..\Classes\LoginScene.cpp" />
@@ -145,13 +148,16 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
   <ItemGroup>
     <ClInclude Include="..\Classes\AppDelegate.h" />
     <ClInclude Include="..\Classes\Ball.h" />
+    <ClInclude Include="..\Classes\Box2dWorld.h" />
     <ClInclude Include="..\Classes\Entity.h" />
+    <ClInclude Include="..\Classes\GLES-Render.h" />
     <ClInclude Include="..\Classes\HelloWorldScene.h" />
     <ClInclude Include="..\Classes\LoginLayer.h" />
     <ClInclude Include="..\Classes\LoginScene.h" />
     <ClInclude Include="..\Classes\SettingScene.h" />
     <ClInclude Include="..\Classes\SnagForestLayer.h" />
     <ClInclude Include="..\Classes\SnagForestScene.h" />
+    <ClInclude Include="..\Classes\SnagForestWorld.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>

@@ -16,6 +16,9 @@
     <Filter Include="Classes\Entity">
       <UniqueIdentifier>{34d706c0-2cae-493b-aadd-fba12920a098}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\Box2d">
+      <UniqueIdentifier>{596af188-18a4-44f8-8ea3-96780c5c1a43}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -47,6 +50,15 @@
     </ClCompile>
     <ClCompile Include="..\Classes\Ball.cpp">
       <Filter>Classes\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Box2dWorld.cpp">
+      <Filter>Classes\Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameEntries.cpp">
+      <Filter>Classes\Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GLES-Render.cpp">
+      <Filter>Classes\Box2d</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -80,6 +92,15 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Ball.h">
       <Filter>Classes\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\SnagForestWorld.h">
+      <Filter>Classes\Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Box2dWorld.h">
+      <Filter>Classes\Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GLES-Render.h">
+      <Filter>Classes\Box2d</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
