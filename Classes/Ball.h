@@ -13,15 +13,29 @@ public:
 	~Ball();
 	virtual bool init();
 	CREATE_FUNC(Ball);
+	void draw();
 
-	//void update(float dt);
+	CCRect getBoundingBox(); //obtain collide range
 
-	void moveHorizontal();
-	//void fall();
-public:
+	bool isCollidedWithSprite(CCSprite* sprite);
+	void removePlatBetweenSnags(CCSprite* preSprite);
+
+
+	bool isMoving();
+	void setMoving(bool isMoving);
+	bool getMovingDirection();
+	void setMovingDirection(bool movingDirection);
+	float getMovingSpeed();
+	void setMovingSpeed(float movingSpeed);
+	CCSize getBallSize();
+	void setBallSize(CCSize ballSize);
+
+protected:
 	bool m_isMoving;
 	bool m_movingDirection;    /*true means left, false means right*/
-	float m_moveSpeed;
+	float m_movingSpeed;
 	CCSize m_ballSize;
+private:
+	CCSprite* m_preBeCollided;
 };
 #endif // __BALL_H__

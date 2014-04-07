@@ -14,6 +14,11 @@ CCSprite* Entity::getSprite()
 	return this->m_sprite;
 }
 
+void Entity::setSpriteAsNULL()
+{
+	this->m_sprite = NULL;
+}
+
 void Entity::bindSprite(CCSprite* sprite)
 {
 	this->m_sprite = sprite;

@@ -11,7 +11,8 @@ class Entity: public cocos2d::CCNode
 public:	
 	Entity();	
 	~Entity();
-	CCSprite* getSprite();					/*get sprite object*/
+	CCSprite* getSprite();		/*get sprite object*/
+	void setSpriteAsNULL();		/*set sprite object*/
 	void bindSprite(CCSprite* sprite);		/*bind sprite object*/
 private:
 	CCSprite* m_sprite;

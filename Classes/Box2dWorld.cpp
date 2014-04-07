@@ -264,7 +264,7 @@ void Box2dWorld::Step(Settings* settings)
 
 	m_world->Step(timeStep, settings->velocityIterations, settings->positionIterations);
 
-	m_world->DrawDebugData();
+	//m_world->DrawDebugData();
 
 	// Track maximum profile times
 	{

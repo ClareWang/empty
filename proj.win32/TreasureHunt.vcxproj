@@ -141,6 +141,7 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     <ClCompile Include="..\Classes\LoginLayer.cpp" />
     <ClCompile Include="..\Classes\LoginScene.cpp" />
     <ClCompile Include="..\Classes\SettingScene.cpp" />
+    <ClCompile Include="..\Classes\Snag.cpp" />
     <ClCompile Include="..\Classes\SnagForestLayer.cpp" />
     <ClCompile Include="..\Classes\SnagForestScene.cpp" />
     <ClCompile Include="main.cpp" />
@@ -155,6 +156,7 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     <ClInclude Include="..\Classes\LoginLayer.h" />
     <ClInclude Include="..\Classes\LoginScene.h" />
     <ClInclude Include="..\Classes\SettingScene.h" />
+    <ClInclude Include="..\Classes\Snag.h" />
     <ClInclude Include="..\Classes\SnagForestLayer.h" />
     <ClInclude Include="..\Classes\SnagForestScene.h" />
     <ClInclude Include="..\Classes\SnagForestWorld.h" />

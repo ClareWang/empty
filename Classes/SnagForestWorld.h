@@ -25,10 +25,10 @@ public :
 
 
 
-
+			// create slots
 			for (int32 i = 1; i < 12; ++i)
 			{
-				shape.Set(b2Vec2(sizeX/6/2/PT_RATIO * i, 0.0/PT_RATIO), b2Vec2(sizeX/6/2/PT_RATIO * i, 58/PT_RATIO));
+				shape.Set(b2Vec2(sizeX/5/2/PT_RATIO * i, 0.0/PT_RATIO), b2Vec2(sizeX/5/2/PT_RATIO * i, 58/PT_RATIO));
 				ground->CreateFixture(&shape, 0.0f);
 			}
 
@@ -36,14 +36,14 @@ public :
 
 		{
 			b2CircleShape shape;
-			shape.m_radius = 0.7/PT_RATIO;
+			shape.m_radius = 0.1/PT_RATIO;
 
 			b2FixtureDef fd;
 			fd.shape = &shape;
 			fd.density = 1.0f;
-			fd.friction = 0.1f;
+			fd.friction = 3.0f;
 
-			float32 restitution = 0.4f;
+			float32 restitution = 0.1f;
 
 			for (int32 i = 0; i < 7; ++i)
 			{
@@ -54,13 +54,13 @@ public :
 
 					if (j%2 == 1)
 					{
-						bd.position.Set(sizeX/6/PT_RATIO * i, (sizeX+80-(sizeX/6/2)*j)/PT_RATIO);
+						bd.position.Set(sizeX/6/PT_RATIO * i, (sizeX+70-(sizeX/6/2-5)*j)/PT_RATIO);
 					}
 					else
 					{
-						bd.position.Set(sizeX/6/2/PT_RATIO + sizeX/6/PT_RATIO * i, (sizeX+80-(sizeX/6/2)*j)/PT_RATIO);
+						bd.position.Set(sizeX/6/2/PT_RATIO + sizeX/6/PT_RATIO * i, (sizeX+70-(sizeX/6/2-5)*j)/PT_RATIO);
 					}
-
+					bd.userData = NULL;
 					b2Body* body = m_world->CreateBody(&bd);
 
 					fd.restitution = restitution;

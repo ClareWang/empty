@@ -5,6 +5,7 @@
 #include "cocos-ext.h"
 
 #include "Ball.h"
+#include "Snag.h"
 
 
 struct GameEntry;
@@ -24,7 +25,7 @@ public:
 
 	void update(float dt);
     void tick(float dt);
-    void draw();
+    void draw();//uses for debug
 
 	virtual void registerWithTouchDispatcher();
     virtual bool ccTouchBegan(CCTouch* touch, CCEvent* event);
@@ -32,13 +33,20 @@ public:
     virtual void ccTouchEnded(CCTouch* touch, CCEvent* event);
 
 	bool SnagForestLayer::initWithEntryID(int entryId);
+	void initMap();
+	void initBallLauncher();
+	void initSnags();
+	void initSlots();
 
+
+	void routeDetection(Ball* fallBall);
 	//virtual void ccTouchesBegan(cocos2d::CCSet *pTouches, cocos2d::CCEvent *pEvent);
 
 	//virtual void ccTouchesMoved(cocos2d::CCSet *pTouches, cocos2d::CCEvent *pEvent);
 private:
-	Ball* m_ball;
+	Ball* m_ballLauncher;
 	CCSize  m_winSize;
-	bool m_isExsist;
+
+	CCArray* m_snagArr;
 };
 #endif // __SNAGFOREST_LAYER_H__

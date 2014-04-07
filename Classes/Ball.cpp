@@ -4,10 +4,9 @@
 Ball::Ball()
 	: m_isMoving(false)
 	, m_movingDirection(true)
-	, m_moveSpeed(1.0)
-	//, m_ballSize()
+	, m_movingSpeed(1.0)
+	, m_preBeCollided(NULL)
 {
-	//m_ballSize = NULL;
 }
 
 Ball::~Ball()
@@ -16,51 +15,102 @@ Ball::~Ball()
 
 bool Ball::init()
 {
-
 	return true;
 }
 
+bool Ball::isMoving()
+{
+	return this->m_isMoving;
+}
+void Ball::setMoving(bool isMoving)
+{
+	this->m_isMoving = isMoving;
+}
+bool Ball::getMovingDirection()
+{
+	return this->m_movingDirection;
+}
+void Ball::setMovingDirection(bool movingDirection)
+{
+	this->m_movingDirection = movingDirection;
+}
+float Ball::getMovingSpeed()
+{
+	return this->m_movingSpeed;
+}
+void Ball::setMovingSpeed(float movingSpeed)
+{
+	this->m_movingSpeed = movingSpeed;
+}
+CCSize Ball::getBallSize()
+{
+	return this->m_ballSize;
+}
+void Ball::setBallSize(CCSize ballSize)
+{
+	this->m_ballSize = ballSize;
+}
 
-//void Ball::update(float dt)
+
+CCRect Ball::getBoundingBox()
+{
+	if(getSprite() == NULL)
+	{
+		return CCRectMake(0,0,0,0);
+	}
+
+	CCPoint entityPos = getPosition();
+
+	return CCRectMake(entityPos.x - m_ballSize.width/2, entityPos.y - m_ballSize.height/2, m_ballSize.width, m_ballSize.height);
+}
+
+
+
+bool Ball::isCollidedWithSprite(CCSprite* sprite)
+{
+	if (getSprite() != NULL)
+	{
+		CCRect entityRrct = this->getBoundingBox();
+		CCPoint spritePos = sprite->getPosition();
+
+		/*if (entityRrct.containsPoint(snagPos))
+		{
+		return true;
+		}*/
+		return entityRrct.containsPoint(spritePos);
+	}
+
+	return false;
+}
+
+
+//void Snag::setCollided(bool isCollided)
 //{
-//	moveHorizontal();
+//	this->m_isCollided = isCollided;
 //}
 
-
-void Ball::moveHorizontal()
+void Ball::removePlatBetweenSnags(CCSprite* preSprite)
 {
-	//if(getSprite() == NULL)
-	//{
-	//	CCLOG("Ball::move() can not get ball");
-	//	return;
-	//}
-	//if (!m_isMoving)
-	//{
-	//	m_ballSize = getSprite()->getContentSize();
-	//	m_isMoving = true;
-	//}
-	//if(m_movingDirection)
-	//{
-	//	m_moveSpeed = ccp(this->getPositionX()-1.0, this->getPositionY());
-	//}
-	//else
-	//{
-	//	m_moveSpeed = ccp(this->getPositionX()+1.0, this->getPositionY());
-	//}
+	m_preBeCollided = preSprite;
+	if (isCollidedWithSprite(preSprite))
+	{
+		if (m_preBeCollided == NULL)
+		{
+			preSprite = this;
+		}
+		else
+		{
+			this->draw();
+		}
+	}
+}
 
-	//CCPoint expect = this->getPosition() + m_moveSpeed;
-	////CCPoint actual = expect;
+void Ball::draw()
+{
+	glLineWidth(5);
+	CCPoint srcPos = CCPoint(this->getPositionX() - RADIUS, this->getPositionY() + RADIUS);
+	CCPoint destPos = CCPoint(this->getPositionX() + RADIUS, this->getPositionY() - RADIUS);
 
-	//this->setPosition(expect);
-
-
-	//if(this->getPositionX() == m_ballSize.width/2)
-	//{
-	//	m_movingDirection = false;
-	//}
-	//else
-	//{
-	//	m_movingDirection = true;
-	//}
-	//this->setZOrder(this->getPositionY()+1);
+	ccDrawRect(srcPos,destPos);
+	glLineWidth(1);
 }
