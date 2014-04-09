@@ -9,7 +9,7 @@ Box2dWorld::Box2dWorld()
 {
 
 	b2Vec2 gravity;
-	gravity.Set(0.0f, -10.0f);
+	gravity.Set(0.0f, -50.0f);
 	m_world = new b2World(gravity);
 	m_world->SetAllowSleeping(true);
 	m_world->SetContinuousPhysics(true);

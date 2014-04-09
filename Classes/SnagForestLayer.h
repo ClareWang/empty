@@ -5,8 +5,8 @@
 #include "cocos-ext.h"
 
 #include "Ball.h"
-#include "Snag.h"
 
+const unsigned int c_triSnags = 4;
 
 struct GameEntry;
 class Box2dWorld;
@@ -24,6 +24,7 @@ public:
 	CREATE_FUNC(SnagForestLayer);
 
 	void update(float dt);
+	void updateRandSpeed(float dt);
     void tick(float dt);
     void draw();//uses for debug
 
@@ -44,9 +45,19 @@ public:
 
 	//virtual void ccTouchesMoved(cocos2d::CCSet *pTouches, cocos2d::CCEvent *pEvent);
 private:
+	bool isCollidedWithBall(Ball* fallBall, CCSprite *snag);
+	void drawTriangle();
+
+
+
+private:
 	Ball* m_ballLauncher;
 	CCSize  m_winSize;
 
 	CCArray* m_snagArr;
+	
+	float m_randSpeed;
+
+
 };
 #endif // __SNAGFOREST_LAYER_H__

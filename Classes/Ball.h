@@ -13,12 +13,8 @@ public:
 	~Ball();
 	virtual bool init();
 	CREATE_FUNC(Ball);
-	void draw();
 
 	CCRect getBoundingBox(); //obtain collide range
-
-	bool isCollidedWithSprite(CCSprite* sprite);
-	void removePlatBetweenSnags(CCSprite* preSprite);
 
 
 	bool isMoving();
@@ -36,6 +32,6 @@ protected:
 	float m_movingSpeed;
 	CCSize m_ballSize;
 private:
-	CCSprite* m_preBeCollided;
+	//CCSprite* m_preBeCollided;
 };
 #endif // __BALL_H__

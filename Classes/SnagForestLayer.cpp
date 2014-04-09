@@ -9,11 +9,13 @@ using namespace ui;
 #define kAccelerometerFrequency 30
 #define FRAMES_BETWEEN_PRESSES_FOR_DOUBLE_CLICK 10
 
+
 extern int g_totalEntries;
 
 Settings settings;
 
 SnagForestLayer::SnagForestLayer()
+	: m_randSpeed(1.0)
 {
 }
 
@@ -56,12 +58,13 @@ bool SnagForestLayer::initWithEntryID(int entryId)
 {
 	m_winSize = CCDirector::sharedDirector()->getWinSize();
 
-	initMap();
+	//initMap();
 	initBallLauncher();
 	initSnags();
 
 	setTouchEnabled( true );
 	schedule( schedule_selector(SnagForestLayer::tick) );
+	schedule( schedule_selector(SnagForestLayer::updateRandSpeed), 0.8 );
 
 	this->scheduleUpdate();
 	m_gameEntry = g_gameEntries + entryId;
@@ -94,20 +97,21 @@ void SnagForestLayer::initSnags()
 	m_snagArr->retain();
 	CCSpriteBatchNode* snags = CCSpriteBatchNode::create("stock_draw_circle.png");
 	this->addChild(snags,2);
+
+	float radius = 5.0f;
+	float winX = m_winSize.width -radius*2;
 	for (int32 i = 0; i < 7; ++i)
 	{
 		for(int32 j = 0; j < 13; ++j)
 		{
-			//Snag* snag = Snag::create();
 			CCSprite* snag = CCSprite::create("stock_draw_circle.png");
-			//snag->bindSprite(sprite);
 			if (j%2 == 1)
 			{
-				snag->setPosition(ccp(m_winSize.width/6 * i, (m_winSize.width+70-(m_winSize.width/6/2-5)*j)));
+				snag->setPosition(ccp(winX/6 * i + radius, (420-(winX/6/2)*j)));
 			}
 			else
 			{
-				snag->setPosition(ccp(m_winSize.width/6/2 + m_winSize.width/6 * i, (m_winSize.width+70-(m_winSize.width/6/2-5)*j)));
+				snag->setPosition(ccp(winX/6/2 + winX/6 * i + radius, (420-(winX/6/2)*j)));
 			}
 			snags->addChild(snag);
 			m_snagArr->addObject(snag);
@@ -120,6 +124,19 @@ void SnagForestLayer::initSlots()
 {
 
 
+}
+
+void SnagForestLayer::updateRandSpeed(float dt)
+{
+
+	if (m_randSpeed)
+	{
+		m_randSpeed = 8*CCRANDOM_0_1();
+	}
+	else
+	{
+		m_randSpeed = 1.0;
+	}
 }
 
 void SnagForestLayer::update(float dt)
@@ -138,11 +155,11 @@ void SnagForestLayer::update(float dt)
 		//CCLOG("%d", m_ballLauncher->getMovingDirection());
 		if(m_ballLauncher->getMovingDirection())
 		{
-			m_ballLauncher->setMovingSpeed(m_ballLauncher->getPositionX()-1.0);
+			m_ballLauncher->setMovingSpeed(m_ballLauncher->getPositionX()-m_randSpeed);
 		}
 		else
 		{
-			m_ballLauncher->setMovingSpeed(m_ballLauncher->getPositionX()+1.0);
+			m_ballLauncher->setMovingSpeed(m_ballLauncher->getPositionX()+m_randSpeed);
 		}
 
 		m_ballLauncher->setPositionX(m_ballLauncher->getMovingSpeed());
@@ -209,7 +226,7 @@ void SnagForestLayer::draw()
 	kmGLPushMatrix();
 
 	//m_box2dWorld->m_world->DrawDebugData();
-
+	drawTriangle();
 	kmGLPopMatrix();
 
 	CHECK_GL_ERROR_DEBUG();
@@ -230,16 +247,16 @@ bool SnagForestLayer::ccTouchBegan(CCTouch* touch, CCEvent* event)
 
 	//CCSprite* fallBall = CCSprite::create("CloseNormal.png");
 	Ball* fallBall = Ball::create();
-	fallBall->bindSprite(CCSprite::create("CloseNormal.png"));
+	fallBall->bindSprite(CCSprite::create("Gui/Login_1/Object.png"));
 	fallBall->setBallSize(fallBall->getSprite()->getContentSize());
 
 	b2CircleShape shape1;
-	shape1.m_radius = 13.0/PT_RATIO;
+	shape1.m_radius = 11.5/PT_RATIO;
 	b2FixtureDef fd1;
 	fd1.shape = &shape1;
-	fd1.density = 1.0f;
-	fd1.friction = 5.0f;
-	float32 restitution = 0.4f;
+	fd1.density = 8.0f;
+	fd1.friction = 10.0f*CCRANDOM_0_1();
+	float32 restitution = 0.1f;
 	b2BodyDef bd1;
 	bd1.type = b2_dynamicBody;
 	bd1.position.Set(boxBall.x/PT_RATIO, boxBall.y/PT_RATIO);
@@ -291,20 +308,41 @@ void SnagForestLayer::ccTouchEnded(CCTouch* touch, CCEvent* event)
 void SnagForestLayer::routeDetection(Ball* fallBall)
 {
 	CCObject* obj = NULL;
-	CCSprite* sprite = NULL;
-	Snag* snag = Snag::create();
-	Snag* preSnag = Snag::create();
+	CCSprite* snag = NULL;
+	//CCSprite* tmpsnag = NULL;
 	CCARRAY_FOREACH(m_snagArr, obj)
 	{
-		sprite = (CCSprite *)obj;
-		snag->bindSprite(sprite);
-
-		snag->removePlatBetweenSnags(fallBall, preSnag);
-		preSnag->setSpriteAsNULL();
+		snag = (CCSprite *)obj;
+		if (isCollidedWithBall(fallBall, snag))
+		{
+			
+			//CCLOG("void SnagForestLayer::routeDetection(Ball* fallBall)");
+		}
 	}
 }
 
 
+void SnagForestLayer::drawTriangle()
+{
+	CHECK_GL_ERROR_DEBUG();
+	ccDrawColor4B(0,0,255,128);
+	CCPoint m_vertices[c_triSnags] = { ccp(0,5), ccp(45,50), ccp(10,155), ccp(15,58) };
+	ccDrawSolidPoly(m_vertices, c_triSnags, ccc4f(0.5f, 0.5f, 1, 1 ) );
+}
+
+
+bool SnagForestLayer::isCollidedWithBall(Ball* fallBall, CCSprite *snag)
+{
+	if (fallBall->getSprite() != NULL)
+	{
+		CCRect entityRrct = fallBall->getBoundingBox();
+		CCPoint snagPos = snag->getPosition();
+
+		return entityRrct.containsPoint(snagPos);
+	}
+
+	return false;
+}
 
 
 //void SnagForestLayer::ccTouchesBegan(cocos2d::CCSet *pTouches, cocos2d::CCEvent *pEvent)
