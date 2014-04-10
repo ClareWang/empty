@@ -7,6 +7,8 @@
 #include "Ball.h"
 
 const unsigned int c_triSnags = 4;
+const float c_radius = 5.0f;
+const unsigned int c_heightStart = 420;
 
 struct GameEntry;
 class Box2dWorld;
@@ -34,30 +36,35 @@ public:
     virtual void ccTouchEnded(CCTouch* touch, CCEvent* event);
 
 	bool SnagForestLayer::initWithEntryID(int entryId);
-	void initMap();
-	void initBallLauncher();
-	void initSnags();
-	void initSlots();
 
 
-	void routeDetection(Ball* fallBall);
 	//virtual void ccTouchesBegan(cocos2d::CCSet *pTouches, cocos2d::CCEvent *pEvent);
 
 	//virtual void ccTouchesMoved(cocos2d::CCSet *pTouches, cocos2d::CCEvent *pEvent);
 private:
 	bool isCollidedWithBall(Ball* fallBall, CCSprite *snag);
-	void drawTriangle();
-
-
+	void ballLauncherMoving();
+	void showCells(Ball* fallBall, unsigned int indexOfCellArr);
+	void routeDetection(Ball* fallBall);
+	
+	void initMap();
+	void initBallLauncher();
+	void initSnags();
+	void initCell();
+	void initSlots();
 
 private:
 	Ball* m_ballLauncher;
 	CCSize  m_winSize;
 
 	CCArray* m_snagArr;
+	CCDictionary* m_cellDic;
+	
 	
 	float m_randSpeed;
+	float m_winX;
 
-
+	
+	b2Body* m_removeb;
 };
 #endif // __SNAGFOREST_LAYER_H__
