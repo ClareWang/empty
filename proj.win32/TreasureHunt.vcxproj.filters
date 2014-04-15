@@ -60,9 +60,6 @@
     <ClCompile Include="..\Classes\GLES-Render.cpp">
       <Filter>Classes\Box2d</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\Snag.cpp">
-      <Filter>Classes\Entity</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -104,9 +101,6 @@
     </ClInclude>
     <ClInclude Include="..\Classes\GLES-Render.h">
       <Filter>Classes\Box2d</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\Snag.h">
-      <Filter>Classes\Entity</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

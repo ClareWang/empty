@@ -209,5 +209,7 @@ public:
     b2Profile m_maxProfile;
     b2Profile m_totalProfile;
 
+	
+	b2RevoluteJoint* m_revoluteJoint;
 };
 #endif // __BOX2D_WORLD_H__

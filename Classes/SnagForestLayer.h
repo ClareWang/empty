@@ -16,8 +16,8 @@ class SnagForestLayer: public cocos2d::CCLayer
 {
 public:
 	GameEntry*     m_gameEntry;
-    Box2dWorld*    m_box2dWorld;
-    int            m_entryID;
+	Box2dWorld*    m_box2dWorld;
+	int            m_entryID;
 
 public:	
 	SnagForestLayer();	
@@ -27,13 +27,13 @@ public:
 
 	void update(float dt);
 	void updateRandSpeed(float dt);
-    void tick(float dt);
-    void draw();//uses for debug
+	void tick(float dt);
+	void draw();//uses for debug
 
 	virtual void registerWithTouchDispatcher();
-    virtual bool ccTouchBegan(CCTouch* touch, CCEvent* event);
-    virtual void ccTouchMoved(CCTouch* touch, CCEvent* event);
-    virtual void ccTouchEnded(CCTouch* touch, CCEvent* event);
+	virtual bool ccTouchBegan(CCTouch* touch, CCEvent* event);
+	virtual void ccTouchMoved(CCTouch* touch, CCEvent* event);
+	virtual void ccTouchEnded(CCTouch* touch, CCEvent* event);
 
 	bool SnagForestLayer::initWithEntryID(int entryId);
 
@@ -46,7 +46,7 @@ private:
 	void ballLauncherMoving();
 	void showCells(Ball* fallBall, unsigned int indexOfCellArr);
 	void routeDetection(Ball* fallBall);
-	
+
 	void initMap();
 	void initBallLauncher();
 	void initSnags();
@@ -55,16 +55,18 @@ private:
 
 private:
 	Ball* m_ballLauncher;
+	Ball* m_upBall;
 	CCSize  m_winSize;
 
 	CCArray* m_snagArr;
 	CCDictionary* m_cellDic;
-	
-	
+
+
 	float m_randSpeed;
+	float m_upBallAngle;
 	float m_winX;
 
-	
 	b2Body* m_removeb;
+
 };
 #endif // __SNAGFOREST_LAYER_H__
