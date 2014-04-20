@@ -60,6 +60,12 @@
     <ClCompile Include="..\Classes\GLES-Render.cpp">
       <Filter>Classes\Box2d</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Devil.cpp">
+      <Filter>Classes\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\DevilLayer.cpp">
+      <Filter>Classes\GameScene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -101,6 +107,15 @@
     </ClInclude>
     <ClInclude Include="..\Classes\GLES-Render.h">
       <Filter>Classes\Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Devil.h">
+      <Filter>Classes\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\DevilLayer.h">
+      <Filter>Classes\GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\MsgTypeForObserver.h">
+      <Filter>Classes\GameScene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

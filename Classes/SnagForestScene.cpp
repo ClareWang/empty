@@ -25,6 +25,9 @@ bool SnagForestScene::init()
 		_snagForestLayer->autorelease();
 		this->addChild(_snagForestLayer);
 
+		_devilLayer = DevilLayer::create();
+		this->addChild(_devilLayer);
+
 		bRet = true;
 	} while (0);
 

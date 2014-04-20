@@ -4,6 +4,7 @@
 #include "cocos2d.h"
 #include "cocos-ext.h"
 #include "SnagForestLayer.h"
+#include "DevilLayer.h"
 
 class SnagForestScene: public cocos2d::CCScene
 {
@@ -15,6 +16,7 @@ public:
 	CREATE_FUNC(SnagForestScene);
 
 	CC_SYNTHESIZE(SnagForestLayer*, _snagForestLayer, SnagForestLayer);
+	CC_SYNTHESIZE(DevilLayer*, _devilLayer, DevilLayer);
 
 };
 

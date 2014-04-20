@@ -18,7 +18,9 @@ SnagForestLayer::SnagForestLayer()
 	: m_randSpeed(1.0)
 	, m_upBallAngle(-1.0)
 	, m_upBall(NULL)
+	, m_isSingle(false)
 	, m_removeb(NULL)
+	, m_devil(NULL)
 {
 }
 
@@ -27,7 +29,6 @@ SnagForestLayer::~SnagForestLayer()
 	delete m_box2dWorld;
 	m_snagArr->release();
 	m_cellDic->release();
-
 }
 
 //bool SnagForestLayer::init()
@@ -72,25 +73,15 @@ bool SnagForestLayer::initWithEntryID(int entryId)
 	initSnags();
 	initCell();
 
+	interactionSubscribe();
+
 	setTouchEnabled( true );
 	schedule( schedule_selector(SnagForestLayer::tick) );
-	schedule( schedule_selector(SnagForestLayer::updateRandSpeed) );
 
 	this->scheduleUpdate();
+
+
 	return true;
-}
-
-void SnagForestLayer::updateRandSpeed(float dt)
-{
-
-	/*if (m_randSpeed)
-	{
-	m_randSpeed = 8*CCRANDOM_0_1();
-	}
-	else
-	{
-	m_randSpeed = 1.0;
-	}*/
 }
 
 void SnagForestLayer::update(float dt)
@@ -108,7 +99,8 @@ void SnagForestLayer::update(float dt)
 			{
 				if (fallBall->getPositionY() <= fallBall->getBallSize().height/2)
 				{
-					this->removeChild(fallBall);
+					this->removeChild(m_upBall);
+					m_upBall = NULL;
 					b->SetUserData(NULL);// otherwise  0xC0000005  error
 					m_removeb = b;   /* this can generate remove missing, if we have more than one ball at the same time in screen.
 									 the latest one can cover others, use array can solve it.*/
@@ -117,6 +109,10 @@ void SnagForestLayer::update(float dt)
 				{
 					fallBall->setPosition(ccp(bX*PT_RATIO, bY*PT_RATIO));
 					fallBall->setRotation(-(float)CC_RADIANS_TO_DEGREES(b->GetAngle()));
+					if (m_devil != NULL && isCollidedWithBall(fallBall, m_devil))
+					{
+						triggerDevil();
+					}
 					routeDetection(fallBall);
 				}
 			}
@@ -128,8 +124,9 @@ void SnagForestLayer::update(float dt)
 	if(m_removeb != NULL)
 	{
 		m_box2dWorld->m_world->DestroyBody(m_removeb);
-		this->setTouchEnabled(true);
 		m_removeb = NULL;
+		m_isSingle = false;
+		this->setTouchEnabled(true);
 	}
 }
 
@@ -138,17 +135,17 @@ void SnagForestLayer::tick(float dt)
 	m_box2dWorld->Step(&settings);
 }
 
-void SnagForestLayer::draw()
-{
-	CCLayer::draw();
-
-	ccGLEnableVertexAttribs( kCCVertexAttribFlag_Position );
-	kmGLPushMatrix();
-	m_box2dWorld->m_world->DrawDebugData();
-	kmGLPopMatrix();
-
-	CHECK_GL_ERROR_DEBUG();
-}
+//void SnagForestLayer::draw()
+//{
+//	CCLayer::draw();
+//
+//	ccGLEnableVertexAttribs( kCCVertexAttribFlag_Position );
+//	kmGLPushMatrix();
+//	//m_box2dWorld->m_world->DrawDebugData();
+//	kmGLPopMatrix();
+//
+//	CHECK_GL_ERROR_DEBUG();
+//}
 
 void SnagForestLayer::registerWithTouchDispatcher()
 {
@@ -159,34 +156,6 @@ void SnagForestLayer::registerWithTouchDispatcher()
 
 bool SnagForestLayer::ccTouchBegan(CCTouch* touch, CCEvent* event)
 {
-
-	CCPoint boxBall = m_ballLauncher->getPosition();
-
-	//CCSprite* fallBall = CCSprite::create("CloseNormal.png");
-	Ball* fallBall = Ball::create();
-	fallBall->bindSprite(CCSprite::create("CloseNormal.png"));
-	fallBall->setBallSize(fallBall->getSprite()->getContentSize());
-
-	b2CircleShape shape1;
-	shape1.m_radius = 11.5/PT_RATIO;
-	b2FixtureDef fd1;
-	fd1.shape = &shape1;
-	fd1.density = 8.0f;
-	fd1.friction = 10.0f*CCRANDOM_0_1();
-	float32 restitution = 0.15f;
-	b2BodyDef bd1;
-	bd1.bullet = true;
-	bd1.type = b2_dynamicBody;
-	bd1.position.Set(boxBall.x/PT_RATIO, boxBall.y/PT_RATIO);
-	bd1.userData = fallBall;
-
-	b2Body* body = m_box2dWorld->m_world->CreateBody(&bd1);
-
-	fd1.restitution = restitution;
-	body->CreateFixture(&fd1);
-	fallBall->setPosition(boxBall);
-	this->addChild(fallBall);
-
 	if (m_upBall != NULL)
 	{
 		this->removeChild(m_upBall);
@@ -196,12 +165,9 @@ bool SnagForestLayer::ccTouchBegan(CCTouch* touch, CCEvent* event)
 	m_upBall = Ball::create();
 	m_upBall->bindSprite(CCSprite::create("CloseNormal.png"));
 	m_upBall->setBallSize(m_upBall->getSprite()->getContentSize());
-	m_upBall->setPosition(ccp(m_winSize.width/2, 110));
+	m_upBall->setPosition(ccp(m_winSize.width/2-1, 80));
 
 	this->addChild(m_upBall,1);
-
-
-	CCLOG("ccTouchBegan    %f,   %f", m_upBall->getPosition().x, m_upBall->getPosition().y);
 
 	return true;
 
@@ -212,64 +178,35 @@ void SnagForestLayer::ccTouchMoved(CCTouch* touch, CCEvent* event)
 
 	CCPoint afterStart = touch->getLocation();
 
-	if (afterStart.y - start.y < 10 && afterStart.x - start.x != 0 )
+	if (afterStart.y - start.y < m_winSize.height && afterStart.x - start.x != 0 )
 	{
 		//m_upBall->setAnchorPoint(ccp(0.5,0));
-		CCLOG("m_upBall->getBallSize().height/2       %f", m_upBall->getBallSize().height/2);
-		CCLOG("(afterStart.x - start.x)       %f", (afterStart.x - start.x));
-		CCLOG("(afterStart.x - start.x)/(m_upBall->getBallSize().height/2)       %f", (afterStart.x - start.x)/(m_upBall->getBallSize().height/2));
-		
 		m_upBallAngle = atanf((afterStart.x - start.x)/abs(afterStart.y - m_upBall->getPositionY()));
 		float upBallRotation = (float)CC_RADIANS_TO_DEGREES(m_upBallAngle);
-		CCLOG("ccTouchMoved     upBallRotation       %f", upBallRotation);
 		if (upBallRotation < 0)
 		{
-			upBallRotation = upBallRotation < -45 ? -45 : upBallRotation;
+			upBallRotation = upBallRotation < -BALL_LAUNCH_ROTATION ? -BALL_LAUNCH_ROTATION : upBallRotation;
 		}
 		else if (upBallRotation > 0)
 		{
-			upBallRotation = upBallRotation > 45 ? 45 : upBallRotation;
+			upBallRotation = upBallRotation > BALL_LAUNCH_ROTATION ? BALL_LAUNCH_ROTATION : upBallRotation;
 		}
 		m_upBallAngle = upBallRotation;
 		m_upBall->setRotation(m_upBallAngle);
 
-
-		CCLOG("start %f,   %f", start.x, start.y);
-		CCLOG("afterStart %f,   %f", afterStart.x, afterStart.y);
-		CCLOG("m_upBall %f,   %f", m_upBall->getPosition().x, m_upBall->getPosition().y);
-		CCLOG("ccTouchMoved");
 	}
 
 }
 void SnagForestLayer::ccTouchEnded(CCTouch* touch, CCEvent* event)
 {
-	/*CCPoint location = touch->getLocation();
-
-	m_ball->setPosition(location);
-
-	if (m_ball->m_isMoving)
-	{
-
-	m_ball->m_isMoving = false;
-	}
-	else
-	{
-	m_ball->m_isMoving = true;
-	}*/
-
-	/*CCPoint touchLocation = touch->getLocation();    
-	CCPoint nodePosition = convertToNodeSpace( touchLocation );
-
-	m_box2dWorld->MouseUp(b2Vec2(nodePosition.x/PT_RATIO,nodePosition.y/PT_RATIO));*/
-
-	this->setTouchEnabled( false );
-
 	m_upBallAngle = m_upBall->getRotation();
-
+	this->setTouchEnabled( false );
 }
 
 
 /*private function*/
+
+/* === Initial Scene ===*/
 void SnagForestLayer::initMap()
 {
 	CCSprite *bg_Sprite = CCSprite::create("SnagForest_BG.png");
@@ -280,13 +217,6 @@ void SnagForestLayer::initMap()
 
 void SnagForestLayer::initBallLauncher()
 {
-	m_ballLauncher = Ball::create();
-	m_ballLauncher->bindSprite(CCSprite::create("CloseNormal.png"));
-	m_ballLauncher->setPosition( ccp( m_winSize.width/2, 20.0));
-	m_ballLauncher->setBallSize(m_ballLauncher->getSprite()->getContentSize());
-	m_ballLauncher->setMoving(true);
-	m_ballLauncher->setMovingDirection(true);
-	this->addChild(m_ballLauncher,1);
 
 }
 
@@ -349,60 +279,44 @@ void SnagForestLayer::initSlots()
 
 }
 
+
+/* === Ball Action ===*/
 void SnagForestLayer::ballLauncherMoving()
 {
-	if(m_ballLauncher == NULL)
+	if (m_upBall != NULL && !this->isTouchEnabled() && !m_isSingle)
 	{
-		CCLOG("SnagForestLayer::update(float dt) can not get ball");
-		return;
-	}
-	if (!m_ballLauncher->isMoving())
-	{
-		return;
-	}
-	else
-	{
-		if(m_ballLauncher->getMovingDirection())
-		{
-			m_ballLauncher->setMovingSpeed(m_ballLauncher->getPositionX()-m_randSpeed);
-		}
-		else
-		{
-			m_ballLauncher->setMovingSpeed(m_ballLauncher->getPositionX()+m_randSpeed);
-		}
-
-		m_ballLauncher->setPositionX(m_ballLauncher->getMovingSpeed());
-
-
-		if(m_ballLauncher->getPositionX() <= m_ballLauncher->getBallSize().width/2)
-		{
-			m_ballLauncher->setMovingDirection(false);
-		}
-		else if (m_ballLauncher->getPositionX() >= m_winSize.width - m_ballLauncher->getBallSize().width/2)
-		{
-			m_ballLauncher->setMovingDirection(true);
-		}
-	}
-
-
-
-
-	if (m_upBall != NULL && !this->isTouchEnabled())
-	{
-		if (m_upBall->getPositionY() <= 400)
+		if ( m_upBall->getPositionY() <= (m_winSize.height-m_upBall->getBallSize().height/2) )
 		{
 			CCPoint expect = ccp(10*tan(CC_DEGREES_TO_RADIANS(m_upBallAngle)), 10);
 			m_upBall->setPosition(m_upBall->getPosition() + expect);
 		}
 		else
 		{
-			this->setTouchEnabled(true);
-			CCLOG("m_upBallAngle   %f", m_upBallAngle);
-			CCLOG("%f,   %f", m_upBall->getPosition().x, m_upBall->getPosition().y);
-
-			CCLOG("ballLauncherMoving");
+			createFallBall();
+			m_isSingle = true;
 		}
 	}
+}
+
+void SnagForestLayer::createFallBall()
+{
+	b2CircleShape shape1;
+	shape1.m_radius = 11.5/PT_RATIO;
+	b2FixtureDef fd1;
+	fd1.shape = &shape1;
+	fd1.density = 8.0f;
+	fd1.friction = 10.0f*CCRANDOM_0_1();
+	float32 restitution = 0.15f;
+	b2BodyDef bd1;
+	bd1.bullet = true;
+	bd1.type = b2_dynamicBody;
+	bd1.position.Set(m_upBall->getPositionX()/PT_RATIO, m_upBall->getPositionY()/PT_RATIO);
+	bd1.userData = m_upBall;
+
+	b2Body* body = m_box2dWorld->m_world->CreateBody(&bd1);
+
+	fd1.restitution = restitution;
+	body->CreateFixture(&fd1);
 }
 
 void SnagForestLayer::routeDetection(Ball* fallBall)
@@ -471,44 +385,44 @@ void SnagForestLayer::showCells(Ball* fallBall, unsigned int indexOfCellArr)
 			if (!cell->isVisible())
 			{
 				cell->setVisible(true);
+
 			}
-			//CCLOG("void SnagForestLayer::routeDetection(Ball* fallBall)");
 		}
 	}
 }
 
-bool SnagForestLayer::isCollidedWithBall(Ball* fallBall, CCSprite *snag)
+bool SnagForestLayer::isCollidedWithBall(Ball* fallBall, CCNode *node)
 {
 	if (fallBall->getSprite() != NULL)
 	{
 		CCRect entityRrct = fallBall->getBoundingBox();
-		CCPoint snagPos = snag->getPosition();
-
-		return entityRrct.containsPoint(snagPos);
+		CCPoint nodePos = node->getPosition();
+		return entityRrct.containsPoint(nodePos);
 	}
 
 	return false;
 }
 
 
-//void SnagForestLayer::initBallLauncher()
-//{
-//	m_ballLauncher = Ball::create();
-//	m_ballLauncher->bindSprite(CCSprite::create("CloseNormal.png"));
-//	m_ballLauncher->setPosition( ccp( m_winSize.width/2, m_winSize.height-20.0));
-//	m_ballLauncher->setBallSize(m_ballLauncher->getSprite()->getContentSize());
-//	m_ballLauncher->setMoving(true);
-//	m_ballLauncher->setMovingDirection(true);
-//	this->addChild(m_ballLauncher,1);
-//}
+/* === Devil Action ===*/
+void SnagForestLayer::handleDevil(CCObject* pData)
+{
+	m_devil = (CCNode*)pData;
+}
 
-//void SnagForestLayer::drawTriangle()
-//{
-//	CHECK_GL_ERROR_DEBUG();
-//	ccDrawColor4B(0,0,255,128);
-//	CCPoint m_vertices[c_triSnags] = { ccp(0,5), ccp(45,50), ccp(10,155), ccp(15,58) };
-//	ccDrawSolidPoly(m_vertices, c_triSnags, ccc4f(0.5f, 0.5f, 1, 1 ) );
-//}
+void SnagForestLayer::interactionSubscribe()
+{
+	CCNotificationCenter::sharedNotificationCenter()->addObserver(
+		this,
+		callfuncO_selector(SnagForestLayer::handleDevil),
+		MsgTypeForObserver::c_DevilPosUpdate,
+		NULL);
+}
+
+void SnagForestLayer::triggerDevil()
+{
+	CCNotificationCenter::sharedNotificationCenter()->postNotification(MsgTypeForObserver::c_DevilFightingStart, NULL);
+}
 
 //void SnagForestLayer::ccTouchesBegan(cocos2d::CCSet *pTouches, cocos2d::CCEvent *pEvent)
 //{

@@ -134,6 +134,8 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
     <ClCompile Include="..\Classes\Ball.cpp" />
     <ClCompile Include="..\Classes\Box2dWorld.cpp" />
+    <ClCompile Include="..\Classes\Devil.cpp" />
+    <ClCompile Include="..\Classes\DevilLayer.cpp" />
     <ClCompile Include="..\Classes\Entity.cpp" />
     <ClCompile Include="..\Classes\GameEntries.cpp" />
     <ClCompile Include="..\Classes\GLES-Render.cpp" />
@@ -149,11 +151,14 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     <ClInclude Include="..\Classes\AppDelegate.h" />
     <ClInclude Include="..\Classes\Ball.h" />
     <ClInclude Include="..\Classes\Box2dWorld.h" />
+    <ClInclude Include="..\Classes\Devil.h" />
+    <ClInclude Include="..\Classes\DevilLayer.h" />
     <ClInclude Include="..\Classes\Entity.h" />
     <ClInclude Include="..\Classes\GLES-Render.h" />
     <ClInclude Include="..\Classes\HelloWorldScene.h" />
     <ClInclude Include="..\Classes\LoginLayer.h" />
     <ClInclude Include="..\Classes\LoginScene.h" />
+    <ClInclude Include="..\Classes\MsgTypeForObserver.h" />
     <ClInclude Include="..\Classes\SettingScene.h" />
     <ClInclude Include="..\Classes\SnagForestLayer.h" />
     <ClInclude Include="..\Classes\SnagForestScene.h" />
