@@ -52,6 +52,12 @@ void DevilLayer::updateDevil(float dt)
 }
 
 
+void DevilLayer::ccTouchMoved(CCTouch* touch, CCEvent* event)
+{
+
+}
+
+
 /*private function*/
 void DevilLayer::initDevil()
 {
@@ -62,7 +68,7 @@ void DevilLayer::initDevil()
 }
 
 
-void DevilLayer::devilFighting()
+void DevilLayer::devilFighting(CCObject* pData)
 {
 
 }

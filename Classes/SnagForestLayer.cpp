@@ -18,7 +18,7 @@ SnagForestLayer::SnagForestLayer()
 	: m_randSpeed(1.0)
 	, m_upBallAngle(-1.0)
 	, m_upBall(NULL)
-	, m_isSingle(false)
+	, m_isBallGoingUp(true)
 	, m_removeb(NULL)
 	, m_devil(NULL)
 {
@@ -80,13 +80,11 @@ bool SnagForestLayer::initWithEntryID(int entryId)
 
 	this->scheduleUpdate();
 
-
 	return true;
 }
 
 void SnagForestLayer::update(float dt)
 {
-	ballLauncherMoving();
 	// base on position of body(box2d) to update position of CCSprite
 	for(b2Body* b = m_box2dWorld->m_world->GetBodyList(); b; b = b->GetNext())
 	{
@@ -125,7 +123,7 @@ void SnagForestLayer::update(float dt)
 	{
 		m_box2dWorld->m_world->DestroyBody(m_removeb);
 		m_removeb = NULL;
-		m_isSingle = false;
+		m_isBallGoingUp = true;
 		this->setTouchEnabled(true);
 	}
 }
@@ -133,6 +131,29 @@ void SnagForestLayer::update(float dt)
 void SnagForestLayer::tick(float dt)
 {
 	m_box2dWorld->Step(&settings);
+}
+
+void SnagForestLayer::ballLauncherMoving(float dt)
+{
+	if (m_upBall != NULL && !this->isTouchEnabled())
+	{
+		CCPoint expect;
+		if ( m_isBallGoingUp )
+		{
+			expect = ccp(10*tan(CC_DEGREES_TO_RADIANS(m_upBallAngle)), 10);
+			m_isBallGoingUp = m_upBall->getPositionY() < (m_winSize.height - m_upBall->getBallSize().height/2) ? true : false;
+		}
+		else
+		{
+			expect = ccp(10*tan(CC_DEGREES_TO_RADIANS(m_upBallAngle)), -10);
+		}
+		m_upBall->setPosition(m_upBall->getPosition() + expect);
+		if (!m_isBallGoingUp && m_upBall->getPositionY() < m_winSize.height - 100)
+		{
+			createFallBall();
+			this->unschedule( schedule_selector(SnagForestLayer::ballLauncherMoving) );
+		}
+	}
 }
 
 //void SnagForestLayer::draw()
@@ -156,6 +177,7 @@ void SnagForestLayer::registerWithTouchDispatcher()
 
 bool SnagForestLayer::ccTouchBegan(CCTouch* touch, CCEvent* event)
 {
+	schedule( schedule_selector(SnagForestLayer::ballLauncherMoving) );
 	if (m_upBall != NULL)
 	{
 		this->removeChild(m_upBall);
@@ -281,23 +303,6 @@ void SnagForestLayer::initSlots()
 
 
 /* === Ball Action ===*/
-void SnagForestLayer::ballLauncherMoving()
-{
-	if (m_upBall != NULL && !this->isTouchEnabled() && !m_isSingle)
-	{
-		if ( m_upBall->getPositionY() <= (m_winSize.height-m_upBall->getBallSize().height/2) )
-		{
-			CCPoint expect = ccp(10*tan(CC_DEGREES_TO_RADIANS(m_upBallAngle)), 10);
-			m_upBall->setPosition(m_upBall->getPosition() + expect);
-		}
-		else
-		{
-			createFallBall();
-			m_isSingle = true;
-		}
-	}
-}
-
 void SnagForestLayer::createFallBall()
 {
 	b2CircleShape shape1;
@@ -385,7 +390,6 @@ void SnagForestLayer::showCells(Ball* fallBall, unsigned int indexOfCellArr)
 			if (!cell->isVisible())
 			{
 				cell->setVisible(true);
-
 			}
 		}
 	}

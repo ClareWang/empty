@@ -17,10 +17,13 @@ public:
 	CREATE_FUNC(DevilLayer);
 
 	void updateDevil(float dt);
+	
+	
+	virtual void ccTouchMoved(CCTouch* touch, CCEvent* event);
 
 private:
 	void initDevil();
-	void devilFighting();
+	void devilFighting(CCObject* pData);
 
 private:
 	Devil* m_devil;

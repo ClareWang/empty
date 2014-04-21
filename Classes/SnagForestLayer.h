@@ -30,6 +30,7 @@ public:
 
 	void update(float dt);
 	void tick(float dt);
+	void ballLauncherMoving(float dt)
 	//void draw();//uses for debug
 
 	virtual void registerWithTouchDispatcher();
@@ -45,7 +46,6 @@ public:
 	//virtual void ccTouchesMoved(cocos2d::CCSet *pTouches, cocos2d::CCEvent *pEvent);
 private:
 	bool isCollidedWithBall(Ball* fallBall, CCNode *snag);
-	void ballLauncherMoving();
 	void showCells(Ball* fallBall, unsigned int indexOfCellArr);
 	void routeDetection(Ball* fallBall);
 	void createFallBall();
@@ -75,7 +75,7 @@ private:
 
 	b2Body* m_removeb;
 
-	bool m_isSingle;
+	bool m_isBallGoingUp;
 
 };
 #endif // __SNAGFOREST_LAYER_H__
