@@ -5,6 +5,7 @@ USING_NS_CC;
 
 const char* MsgTypeForObserver::c_DevilPosUpdate = "1";
 const char* MsgTypeForObserver::c_DevilFightingStart = "2";
+const char* MsgTypeForObserver::c_DevilFightingStop = "3";
 
 AppDelegate::AppDelegate() {
 

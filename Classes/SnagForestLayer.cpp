@@ -110,6 +110,9 @@ void SnagForestLayer::update(float dt)
 					if (m_devil != NULL && isCollidedWithBall(fallBall, m_devil))
 					{
 						triggerDevil();
+						m_devil->release();
+						m_devil = NULL;
+						CCLOG("triggerDevil");
 					}
 					routeDetection(fallBall);
 				}
@@ -124,7 +127,10 @@ void SnagForestLayer::update(float dt)
 		m_box2dWorld->m_world->DestroyBody(m_removeb);
 		m_removeb = NULL;
 		m_isBallGoingUp = true;
-		this->setTouchEnabled(true);
+		if(!this->isTouchEnabled())
+		{
+			this->setTouchEnabled(true);
+		}
 	}
 }
 
@@ -140,15 +146,15 @@ void SnagForestLayer::ballLauncherMoving(float dt)
 		CCPoint expect;
 		if ( m_isBallGoingUp )
 		{
-			expect = ccp(10*tan(CC_DEGREES_TO_RADIANS(m_upBallAngle)), 10);
+			expect = ccp(BALL_LAUNCH_SPEED*tan(CC_DEGREES_TO_RADIANS(m_upBallAngle)), BALL_LAUNCH_SPEED);
 			m_isBallGoingUp = m_upBall->getPositionY() < (m_winSize.height - m_upBall->getBallSize().height/2) ? true : false;
 		}
 		else
 		{
-			expect = ccp(10*tan(CC_DEGREES_TO_RADIANS(m_upBallAngle)), -10);
+			expect = ccp(BALL_LAUNCH_SPEED*tan(CC_DEGREES_TO_RADIANS(m_upBallAngle)), -BALL_LAUNCH_SPEED);
 		}
 		m_upBall->setPosition(m_upBall->getPosition() + expect);
-		if (!m_isBallGoingUp && m_upBall->getPositionY() < m_winSize.height - 100)
+		if (!m_isBallGoingUp && m_upBall->getPositionY() < m_winSize.height - 32)
 		{
 			createFallBall();
 			this->unschedule( schedule_selector(SnagForestLayer::ballLauncherMoving) );
@@ -156,17 +162,17 @@ void SnagForestLayer::ballLauncherMoving(float dt)
 	}
 }
 
-//void SnagForestLayer::draw()
-//{
-//	CCLayer::draw();
-//
-//	ccGLEnableVertexAttribs( kCCVertexAttribFlag_Position );
-//	kmGLPushMatrix();
-//	//m_box2dWorld->m_world->DrawDebugData();
-//	kmGLPopMatrix();
-//
-//	CHECK_GL_ERROR_DEBUG();
-//}
+void SnagForestLayer::draw()
+{
+	CCLayer::draw();
+
+	ccGLEnableVertexAttribs( kCCVertexAttribFlag_Position );
+	kmGLPushMatrix();
+	m_box2dWorld->m_world->DrawDebugData();
+	kmGLPopMatrix();
+
+	CHECK_GL_ERROR_DEBUG();
+}
 
 void SnagForestLayer::registerWithTouchDispatcher()
 {
@@ -177,6 +183,7 @@ void SnagForestLayer::registerWithTouchDispatcher()
 
 bool SnagForestLayer::ccTouchBegan(CCTouch* touch, CCEvent* event)
 {
+	
 	schedule( schedule_selector(SnagForestLayer::ballLauncherMoving) );
 	if (m_upBall != NULL)
 	{
@@ -190,7 +197,7 @@ bool SnagForestLayer::ccTouchBegan(CCTouch* touch, CCEvent* event)
 	m_upBall->setPosition(ccp(m_winSize.width/2-1, 80));
 
 	this->addChild(m_upBall,1);
-
+	
 	return true;
 
 }
@@ -310,8 +317,8 @@ void SnagForestLayer::createFallBall()
 	b2FixtureDef fd1;
 	fd1.shape = &shape1;
 	fd1.density = 8.0f;
-	fd1.friction = 10.0f*CCRANDOM_0_1();
-	float32 restitution = 0.15f;
+	fd1.friction = 5.0f*CCRANDOM_0_1();
+	float32 restitution = 0.4f;
 	b2BodyDef bd1;
 	bd1.bullet = true;
 	bd1.type = b2_dynamicBody;
@@ -412,6 +419,15 @@ bool SnagForestLayer::isCollidedWithBall(Ball* fallBall, CCNode *node)
 void SnagForestLayer::handleDevil(CCObject* pData)
 {
 	m_devil = (CCNode*)pData;
+	m_devil->retain();
+}
+
+void SnagForestLayer::handleDevilStop(CCObject* pData)
+{
+
+	this->registerWithTouchDispatcher();
+	this->schedule( schedule_selector(SnagForestLayer::tick) );
+	this->scheduleUpdate();
 }
 
 void SnagForestLayer::interactionSubscribe()
@@ -421,11 +437,23 @@ void SnagForestLayer::interactionSubscribe()
 		callfuncO_selector(SnagForestLayer::handleDevil),
 		MsgTypeForObserver::c_DevilPosUpdate,
 		NULL);
+
+	CCNotificationCenter::sharedNotificationCenter()->addObserver(
+		this,
+		callfuncO_selector(SnagForestLayer::handleDevilStop),
+		MsgTypeForObserver::c_DevilFightingStop,
+		NULL);
 }
 
 void SnagForestLayer::triggerDevil()
 {
 	CCNotificationCenter::sharedNotificationCenter()->postNotification(MsgTypeForObserver::c_DevilFightingStart, NULL);
+	this->setTouchEnabled( false );
+	//this->setVisible(false);
+	CCDirector::sharedDirector()->getTouchDispatcher()->removeDelegate(this);
+	this->unschedule( schedule_selector(SnagForestLayer::tick) );
+
+	this->unscheduleUpdate();
 }
 
 //void SnagForestLayer::ccTouchesBegan(cocos2d::CCSet *pTouches, cocos2d::CCEvent *pEvent)

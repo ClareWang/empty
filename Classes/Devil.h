@@ -13,5 +13,11 @@ public:
 	~Devil();
 	virtual bool init();
 	CREATE_FUNC(Devil);
+
+
+//	void setIsTrigger(bool isTrigger);
+//	bool getIsTrigger();
+//private:
+//	bool m_isTrigger;
 };
 #endif // __DEVIL_H__

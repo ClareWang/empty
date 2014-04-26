@@ -7,6 +7,7 @@ class MsgTypeForObserver
 public:
 	const static char* c_DevilPosUpdate;
 	const static char* c_DevilFightingStart;
+	const static char* c_DevilFightingStop;
 };
 
 

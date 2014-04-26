@@ -8,6 +8,7 @@
 #include "MsgTypeForObserver.h"
 
 #define BALL_LAUNCH_ROTATION (20)
+#define BALL_LAUNCH_SPEED (10)
 
 const unsigned int c_triSnags = 4;
 const float c_radius = 5.0f;
@@ -30,8 +31,8 @@ public:
 
 	void update(float dt);
 	void tick(float dt);
-	void ballLauncherMoving(float dt)
-	//void draw();//uses for debug
+	void ballLauncherMoving(float dt);
+	void draw();//uses for debug
 
 	virtual void registerWithTouchDispatcher();
 	virtual bool ccTouchBegan(CCTouch* touch, CCEvent* event);
@@ -52,6 +53,7 @@ private:
 
 	void interactionSubscribe();
 	void handleDevil(CCObject* pData);
+	void handleDevilStop(CCObject* pData);
 
 	void triggerDevil();
 

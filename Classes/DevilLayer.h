@@ -17,9 +17,12 @@ public:
 	CREATE_FUNC(DevilLayer);
 
 	void updateDevil(float dt);
+	void updateFightingBar(float dt);
 	
-	
+	virtual void registerWithTouchDispatcher();
+	virtual bool ccTouchBegan(CCTouch* touch, CCEvent* event);
 	virtual void ccTouchMoved(CCTouch* touch, CCEvent* event);
+	virtual void ccTouchEnded(CCTouch* touch, CCEvent* event);
 
 private:
 	void initDevil();
@@ -28,6 +31,9 @@ private:
 private:
 	Devil* m_devil;
 
+	CCProgressTimer* m_progress;
+	float m_fightingVal;
+	float m_fightingMoved;
 	
 	CCSize  m_winSize;
 };

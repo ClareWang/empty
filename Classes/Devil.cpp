@@ -2,6 +2,7 @@
 
 
 Devil::Devil()
+	//: m_isTrigger(false)
 {
 }
 
@@ -13,3 +14,14 @@ bool Devil::init()
 {
 	return true;
 }
+
+
+//void Devil::setIsTrigger(bool isTrigger)
+//{
+//	this->m_isTrigger = isTrigger;
+//}
+//
+//bool Devil::getIsTrigger()
+//{
+//	return this->m_isTrigger;
+//}
