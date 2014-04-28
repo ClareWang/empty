@@ -13,6 +13,16 @@ DevilLayer::DevilLayer()
 
 DevilLayer::~DevilLayer()
 {
+	if (m_devil)
+	{
+		//delete m_devil;
+		m_devil = NULL;
+	}
+	if (m_progress)
+	{
+		delete m_progress;
+		m_progress = NULL;
+	}
 }
 
 bool DevilLayer::init()
@@ -104,7 +114,7 @@ void DevilLayer::initDevil()
 
 void DevilLayer::devilFighting(CCObject* pData)
 {
-	m_devil->setVisible(false);
+	//m_devil->setVisible(false);
 	CCSprite* fightingProgressBg = CCSprite::create("slider_bar.png");
 	fightingProgressBg->setPosition(ccp(150,300));
 	this->addChild(fightingProgressBg);
@@ -121,16 +131,22 @@ void DevilLayer::devilFighting(CCObject* pData)
 }
 
 
+void DevilLayer::destoryDevilLayer(CCObject* pData)
+{
+	this->removeAllChildren();
+}
+
 void DevilLayer::updateFightingBar(float dt)
 {
 	float proPercet = m_progress->getPercentage();
 	if (proPercet == 0.0f)
 	{
+		this->removeAllChildren();
+		m_progress = NULL;
+		m_devil = NULL;
+		this->setTouchEnabled(false);
 		this->unschedule( schedule_selector(DevilLayer::updateDevil) );
 		this->unschedule( schedule_selector(DevilLayer::updateFightingBar) );
-		this->removeChild(m_progress);
-		this->removeChild(m_devil);
-		this->setTouchEnabled(false);
 		CCNotificationCenter::sharedNotificationCenter()->postNotification(MsgTypeForObserver::c_DevilFightingStop, NULL);
 	}
 	else
@@ -138,3 +154,4 @@ void DevilLayer::updateFightingBar(float dt)
 		m_progress->setPercentage(proPercet+m_fightingVal);
 	}
 }
+

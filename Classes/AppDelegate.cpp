@@ -47,7 +47,9 @@ bool AppDelegate::applicationDidFinishLaunching() {
     // create a scene. it's an autorelease object
     //CCScene *pScene = HelloWorld::scene();
 	CCScene *pScene = LoginScene::create();
-
+	std::vector<std::string> searchPaths =CCFileUtils::sharedFileUtils()->getSearchPaths();
+	searchPaths.insert(searchPaths.begin(), "./");
+	CCFileUtils::sharedFileUtils()->setSearchPaths(searchPaths);
     // run
     pDirector->runWithScene(pScene);
 

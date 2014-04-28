@@ -121,4 +121,7 @@
   <ItemGroup>
     <ResourceCompile Include="TreasureHunt.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+  </ItemGroup>
 </Project>

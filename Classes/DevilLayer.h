@@ -27,6 +27,7 @@ public:
 private:
 	void initDevil();
 	void devilFighting(CCObject* pData);
+	void destoryDevilLayer(CCObject* pData);
 
 private:
 	Devil* m_devil;

@@ -1,6 +1,7 @@
 #include "SnagForestLayer.h"
 #include "GLES-Render.h"
 #include "Box2dWorld.h"
+#include "LoginScene.h"
 
 USING_NS_CC;
 USING_NS_CC_EXT;
@@ -21,6 +22,7 @@ SnagForestLayer::SnagForestLayer()
 	, m_isBallGoingUp(true)
 	, m_removeb(NULL)
 	, m_devil(NULL)
+	, m_emitter(NULL)
 {
 }
 
@@ -110,11 +112,10 @@ void SnagForestLayer::update(float dt)
 					if (m_devil != NULL && isCollidedWithBall(fallBall, m_devil))
 					{
 						triggerDevil();
-						m_devil->release();
-						m_devil = NULL;
+						removeDevil();
 						CCLOG("triggerDevil");
 					}
-					routeDetection(fallBall);
+					//routeDetection(fallBall);
 				}
 			}
 
@@ -129,14 +130,23 @@ void SnagForestLayer::update(float dt)
 		m_isBallGoingUp = true;
 		if(!this->isTouchEnabled())
 		{
-			this->setTouchEnabled(true);
+			this->setTouchEnabled(false);
 		}
+		createParticleFire();
 	}
 }
 
 void SnagForestLayer::tick(float dt)
 {
 	m_box2dWorld->Step(&settings);
+	if (m_emitter != NULL && !m_emitter->isActive())
+	{
+		m_emitter->release();
+		m_emitter = NULL;
+		CCDirector::sharedDirector()->replaceScene(CCTransitionCrossFade::create(2.0f, LoginScene::create()));
+		//CCTransitionSlideInR
+		//CCTransitionCrossFade
+	}
 }
 
 void SnagForestLayer::ballLauncherMoving(float dt)
@@ -168,7 +178,7 @@ void SnagForestLayer::draw()
 
 	ccGLEnableVertexAttribs( kCCVertexAttribFlag_Position );
 	kmGLPushMatrix();
-	m_box2dWorld->m_world->DrawDebugData();
+	//m_box2dWorld->m_world->DrawDebugData();
 	kmGLPopMatrix();
 
 	CHECK_GL_ERROR_DEBUG();
@@ -183,7 +193,7 @@ void SnagForestLayer::registerWithTouchDispatcher()
 
 bool SnagForestLayer::ccTouchBegan(CCTouch* touch, CCEvent* event)
 {
-	
+
 	schedule( schedule_selector(SnagForestLayer::ballLauncherMoving) );
 	if (m_upBall != NULL)
 	{
@@ -192,12 +202,13 @@ bool SnagForestLayer::ccTouchBegan(CCTouch* touch, CCEvent* event)
 	}
 
 	m_upBall = Ball::create();
-	m_upBall->bindSprite(CCSprite::create("CloseNormal.png"));
+	m_upBall->bindSprite(CCSprite::create("ball.png"));
+	m_upBall->setScale(0.55f);
 	m_upBall->setBallSize(m_upBall->getSprite()->getContentSize());
-	m_upBall->setPosition(ccp(m_winSize.width/2-1, 80));
+	m_upBall->setPosition(ccp(m_winSize.width/2+5 - CCRANDOM_0_1(), 92));
 
-	this->addChild(m_upBall,1);
-	
+	this->addChild(m_upBall,100);
+
 	return true;
 
 }
@@ -238,10 +249,16 @@ void SnagForestLayer::ccTouchEnded(CCTouch* touch, CCEvent* event)
 /* === Initial Scene ===*/
 void SnagForestLayer::initMap()
 {
-	CCSprite *bg_Sprite = CCSprite::create("SnagForest_BG.png");
+	CCSprite *bg_Sprite = CCSprite::create("SnagForestScene.jpg");
+	bg_Sprite->setScale(0.5f);
 	bg_Sprite->setPosition( ccp( m_winSize.width/2, m_winSize.height/2));
-	bg_Sprite->setOpacity(100);
-	this->addChild(bg_Sprite, 0, 1);
+	this->addChild(bg_Sprite);
+
+	/*CCSprite *fg_Sprite = CCSprite::create("SnagForestScene_fg.jpg");
+	fg_Sprite->setScaleX(0.475f);
+	fg_Sprite->setScaleY(0.48f);
+	fg_Sprite->setPosition( ccp( m_winSize.width/2, (m_winSize.height+40)/2));
+	this->addChild(fg_Sprite,1);*/
 }
 
 void SnagForestLayer::initBallLauncher()
@@ -253,14 +270,15 @@ void SnagForestLayer::initSnags()
 {
 	m_snagArr = CCArray::create();
 	m_snagArr->retain();
-	CCSpriteBatchNode* snags = CCSpriteBatchNode::create("stock_draw_circle.png");
+	CCSpriteBatchNode* snags = CCSpriteBatchNode::create("snag.png");
 	this->addChild(snags,2);
 
 	for (int32 i = 0; i < 7; ++i)
 	{
 		for(int32 j = 0; j < 13; ++j)
 		{
-			CCSprite* snag = CCSprite::create("stock_draw_circle.png");
+			CCSprite* snag = CCSprite::create("snag.png");
+			snag->setScale(0.6f);
 			if (j%2 == 1)
 			{
 				snag->setPosition(ccp(m_winX/6 * i + c_radius, (c_heightStart-(m_winX/6/2)*j)));
@@ -284,7 +302,8 @@ void SnagForestLayer::initCell()
 		CCArray* cellArr = CCArray::create();
 		for (int32 i = 0; i < 7; ++i)
 		{
-			CCSprite* cell = CCSprite::create("CloseSelected.png");
+			CCSprite* cell = CCSprite::create("ball.png");
+			cell->setScale(0.5f);
 			cell->setRotation(90);
 			if (j%2 == 1)
 			{
@@ -317,8 +336,8 @@ void SnagForestLayer::createFallBall()
 	b2FixtureDef fd1;
 	fd1.shape = &shape1;
 	fd1.density = 8.0f;
-	fd1.friction = 5.0f*CCRANDOM_0_1();
-	float32 restitution = 0.4f;
+	fd1.friction = 10.0f*CCRANDOM_0_1();
+	float32 restitution = 0.2f;
 	b2BodyDef bd1;
 	bd1.bullet = true;
 	bd1.type = b2_dynamicBody;
@@ -424,8 +443,7 @@ void SnagForestLayer::handleDevil(CCObject* pData)
 
 void SnagForestLayer::handleDevilStop(CCObject* pData)
 {
-
-	this->registerWithTouchDispatcher();
+	removeDevil();
 	this->schedule( schedule_selector(SnagForestLayer::tick) );
 	this->scheduleUpdate();
 }
@@ -452,8 +470,41 @@ void SnagForestLayer::triggerDevil()
 	//this->setVisible(false);
 	CCDirector::sharedDirector()->getTouchDispatcher()->removeDelegate(this);
 	this->unschedule( schedule_selector(SnagForestLayer::tick) );
-
 	this->unscheduleUpdate();
+}
+
+
+bool SnagForestLayer::removeDevil()
+{
+	if (m_devil != NULL)
+	{
+		m_devil->release();
+		m_devil = NULL;
+		return true;
+	}
+	return false;
+}
+
+// Particle
+void SnagForestLayer::createParticleFire()
+{
+	m_emitter = CCParticleFire::create();
+	m_emitter->retain();
+	this->addChild(m_emitter,10);
+	m_emitter->setTexture( CCTextureCache::sharedTextureCache()->addImage("fire.png") );
+	m_emitter->setScale(3.0f);
+	m_emitter->setEmissionRate(800);
+	m_emitter->setSpeed(120);
+	m_emitter->setSpeedVar(0);
+	m_emitter->setContentSize(m_winSize);
+	m_emitter->setLifeVar(2.0);
+	m_emitter->setLife(1.0);
+	m_emitter->setDuration(5);
+	m_emitter->setStartSize(20.0f);
+	m_emitter->setStartSizeVar(50.0f);
+	m_emitter->setEndSize(kCCParticleStartSizeEqualToEndSize);
+	m_emitter->setPosition( ccp(m_winSize.width/2, 0) );
+	m_emitter->setBlendAdditive(true);
 }
 
 //void SnagForestLayer::ccTouchesBegan(cocos2d::CCSet *pTouches, cocos2d::CCEvent *pEvent)

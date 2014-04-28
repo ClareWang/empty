@@ -54,7 +54,7 @@ public :
 					b2BodyDef bd;
 					bd.type = b2_staticBody;//b2_dynamicBody;
 					restitution = 0.4*CCRANDOM_0_1();
-					fd.friction = 0.05*CCRANDOM_0_1();;
+					fd.friction = 0.05*CCRANDOM_0_1();
 					if (j%2 == 1)
 					{
 						bd.position.Set((winX/6 * i+radius)/PT_RATIO, (420-(winX/6/2)*j)/PT_RATIO);

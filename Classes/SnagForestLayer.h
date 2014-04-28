@@ -4,11 +4,12 @@
 #include "cocos2d.h"
 #include "cocos-ext.h"
 
+
 #include "Ball.h"
 #include "MsgTypeForObserver.h"
 
 #define BALL_LAUNCH_ROTATION (20)
-#define BALL_LAUNCH_SPEED (10)
+#define BALL_LAUNCH_SPEED (7)
 
 const unsigned int c_triSnags = 4;
 const float c_radius = 5.0f;
@@ -63,6 +64,10 @@ private:
 	void initCell();
 	void initSlots();
 
+	bool removeDevil();
+
+	void createParticleFire();
+
 private:
 	Ball* m_upBall;
 	CCSize  m_winSize;
@@ -79,5 +84,7 @@ private:
 
 	bool m_isBallGoingUp;
 
+
+	CCParticleSystem*    m_emitter;
 };
 #endif // __SNAGFOREST_LAYER_H__
