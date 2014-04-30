@@ -2,6 +2,7 @@
 #include "GLES-Render.h"
 #include "Box2dWorld.h"
 #include "LoginScene.h"
+#include "PolySprite.h"
 
 USING_NS_CC;
 USING_NS_CC_EXT;
@@ -23,6 +24,7 @@ SnagForestLayer::SnagForestLayer()
 	, m_removeb(NULL)
 	, m_devil(NULL)
 	, m_emitter(NULL)
+	, m_cellside(0.0f)
 {
 }
 
@@ -66,6 +68,8 @@ SnagForestLayer::~SnagForestLayer()
 bool SnagForestLayer::initWithEntryID(int entryId)
 {
 	m_winSize = CCDirector::sharedDirector()->getWinSize();
+	CCLOG("m_winSize    %f, %f", m_winSize.width, m_winSize.height);
+	m_cellside = sqrt( (m_winSize.width/6)*(m_winSize.width/6)/2 );
 	m_winX = m_winSize.width -c_radius*2;
 	m_gameEntry = g_gameEntries + entryId;
 	m_box2dWorld = m_gameEntry->createFcn(m_winSize.width, m_winSize.height);
@@ -115,7 +119,7 @@ void SnagForestLayer::update(float dt)
 						removeDevil();
 						CCLOG("triggerDevil");
 					}
-					//routeDetection(fallBall);
+					routeDetection(fallBall);
 				}
 			}
 
@@ -130,7 +134,7 @@ void SnagForestLayer::update(float dt)
 		m_isBallGoingUp = true;
 		if(!this->isTouchEnabled())
 		{
-			this->setTouchEnabled(false);
+			this->setTouchEnabled(true);
 		}
 		createParticleFire();
 	}
@@ -139,14 +143,14 @@ void SnagForestLayer::update(float dt)
 void SnagForestLayer::tick(float dt)
 {
 	m_box2dWorld->Step(&settings);
-	if (m_emitter != NULL && !m_emitter->isActive())
-	{
-		m_emitter->release();
-		m_emitter = NULL;
-		CCDirector::sharedDirector()->replaceScene(CCTransitionCrossFade::create(2.0f, LoginScene::create()));
-		//CCTransitionSlideInR
-		//CCTransitionCrossFade
-	}
+	//if (m_emitter != NULL && !m_emitter->isActive())
+	//{
+	//	m_emitter->release();
+	//	m_emitter = NULL;
+	//	CCDirector::sharedDirector()->replaceScene(CCTransitionCrossFade::create(2.0f, LoginScene::create()));
+	//	//CCTransitionSlideInR
+	//	//CCTransitionCrossFade
+	//}
 }
 
 void SnagForestLayer::ballLauncherMoving(float dt)
@@ -178,7 +182,7 @@ void SnagForestLayer::draw()
 
 	ccGLEnableVertexAttribs( kCCVertexAttribFlag_Position );
 	kmGLPushMatrix();
-	//m_box2dWorld->m_world->DrawDebugData();
+	m_box2dWorld->m_world->DrawDebugData();
 	kmGLPopMatrix();
 
 	CHECK_GL_ERROR_DEBUG();
@@ -203,7 +207,6 @@ bool SnagForestLayer::ccTouchBegan(CCTouch* touch, CCEvent* event)
 
 	m_upBall = Ball::create();
 	m_upBall->bindSprite(CCSprite::create("ball.png"));
-	m_upBall->setScale(0.55f);
 	m_upBall->setBallSize(m_upBall->getSprite()->getContentSize());
 	m_upBall->setPosition(ccp(m_winSize.width/2+5 - CCRANDOM_0_1(), 92));
 
@@ -250,7 +253,7 @@ void SnagForestLayer::ccTouchEnded(CCTouch* touch, CCEvent* event)
 void SnagForestLayer::initMap()
 {
 	CCSprite *bg_Sprite = CCSprite::create("SnagForestScene.jpg");
-	bg_Sprite->setScale(0.5f);
+	//bg_Sprite->setScale(0.5f);
 	bg_Sprite->setPosition( ccp( m_winSize.width/2, m_winSize.height/2));
 	this->addChild(bg_Sprite);
 
@@ -270,15 +273,15 @@ void SnagForestLayer::initSnags()
 {
 	m_snagArr = CCArray::create();
 	m_snagArr->retain();
-	CCSpriteBatchNode* snags = CCSpriteBatchNode::create("snag.png");
-	this->addChild(snags,2);
+	CCSpriteBatchNode* snags = CCSpriteBatchNode::create("snag2.png");
+	this->addChild(snags,600);
 
 	for (int32 i = 0; i < 7; ++i)
 	{
 		for(int32 j = 0; j < 13; ++j)
 		{
-			CCSprite* snag = CCSprite::create("snag.png");
-			snag->setScale(0.6f);
+			CCSprite* snag = CCSprite::create("snag2.png");
+			//snag->setScale(0.6f);
 			if (j%2 == 1)
 			{
 				snag->setPosition(ccp(m_winX/6 * i + c_radius, (c_heightStart-(m_winX/6/2)*j)));
@@ -297,14 +300,14 @@ void SnagForestLayer::initCell()
 {
 	m_cellDic = CCDictionary::create();
 	m_cellDic->retain();
-	for(int32 j = 0; j < 12; ++j)
+	for(int32 j = 0; j < 11; ++j)
 	{
 		CCArray* cellArr = CCArray::create();
 		for (int32 i = 0; i < 7; ++i)
 		{
-			CCSprite* cell = CCSprite::create("ball.png");
-			cell->setScale(0.5f);
-			cell->setRotation(90);
+			CCSprite* cell = CCSprite::createWithSpriteFrame(CCSpriteFrame::create( "SnagForestScene_bg.jpg", CCRectMake(200, 150, m_cellside, m_cellside ) ));
+			//cell->setScale(0.5f);
+			cell->setRotation(45);
 			if (j%2 == 1)
 			{
 				cell->setPosition(ccp(m_winX/6 * i + c_radius, (c_heightStart-(m_winX/6/2)*(j+1))));
@@ -332,12 +335,12 @@ void SnagForestLayer::initSlots()
 void SnagForestLayer::createFallBall()
 {
 	b2CircleShape shape1;
-	shape1.m_radius = 11.5/PT_RATIO;
+	shape1.m_radius = 24.0/PT_RATIO;
 	b2FixtureDef fd1;
 	fd1.shape = &shape1;
-	fd1.density = 8.0f;
-	fd1.friction = 10.0f*CCRANDOM_0_1();
-	float32 restitution = 0.2f;
+	fd1.density = 100.0f;
+	fd1.friction = 50.0f*CCRANDOM_0_1();
+	float32 restitution = 0.4f*CCRANDOM_0_1();
 	b2BodyDef bd1;
 	bd1.bullet = true;
 	bd1.type = b2_dynamicBody;
@@ -416,10 +419,61 @@ void SnagForestLayer::showCells(Ball* fallBall, unsigned int indexOfCellArr)
 			if (!cell->isVisible())
 			{
 				cell->setVisible(true);
+				CCPoint cellPos = cell->getPosition();
+				CCLOG("cell->getAnchorPoint()    %f, %f", cell->getAnchorPoint().x, cell->getAnchorPoint().y);
+
+
+				//CCPoint p[] = {ccp(0, 0), ccp(0, 0.5), ccp(1, 0.5), ccp(1, 0)};//纹理坐标百分比
+				//int index[] = {0, 1, 2, 0, 3, 2};
+				//PolySprite* showcell = PolySprite::create("SnagForestScene_bg.jpg",p,4,index);
+				//showcell->setAnchorPoint(ccp(0.5f,0.5f));
+				//CCLOG("showcell->getContentSize()    %f, %f", showcell->getContentSize().width, showcell->getContentSize().height);
+				//CCLOG("showcell->getAnchorPoint()    %f, %f", showcell->getAnchorPoint().x, showcell->getAnchorPoint().y);
+				//showcell->setPosition(ccp(m_winSize.width/2, m_winSize.height/2));
+
+				//CCLOG("cell->getPosition()   %f    %f", cell->getPosition().x, cell->getPosition().y);
+				CCPoint p[] = { 
+					ccp((cellPos.x-m_winSize.width/6/2), cellPos.y), 
+					ccp(cellPos.x, (cellPos.y-m_winSize.width/6/2)), 
+					ccp((cellPos.x+m_winSize.width/6/2), cellPos.y),
+					ccp(cellPos.x, (cellPos.y+m_winSize.width/6/2)) };
+
+				CCLOG("p[0]   %f    %f", p[0].x, p[0].y);
+				CCLOG("p[1]   %f    %f", p[1].x, p[1].y);
+				CCLOG("p[2]   %f    %f", p[2].x, p[2].y);
+				CCLOG("p[3]   %f    %f", p[3].x, p[3].y);
+
+				int index[] = {0, 1, 2, 0, 3, 2};
+				PolySprite* showcell = PolySprite::create("SnagForestScene_bg.jpg",p,4,index);
+				/*CCLOG("showcell->getContentSize()    %f, %f", showcell->getContentSize().width, showcell->getContentSize().height);
+				CCLOG("showcell->getAnchorPoint()    %f, %f", showcell->getAnchorPoint().x, showcell->getAnchorPoint().y);*/
+				showcell->setAnchorPoint(ccp(0.5f,0.5f));
+				showcell->setPosition(ccp(cellPos.x, cellPos.y-m_winSize.width/6/2));
+
+				this->addChild(showcell,10);
 			}
 		}
 	}
 }
+
+
+//void SnagForestLayer::showCells(Ball* fallBall, unsigned int indexOfCellArr)
+//{
+//	CCObject* obj = NULL;
+//	CCSprite* cell = NULL;
+//	CCArray* cellArr = (CCArray*)m_cellDic->objectForKey(indexOfCellArr);
+//	CCARRAY_FOREACH(cellArr, obj)
+//	{
+//		cell = (CCSprite *)obj;
+//		if (isCollidedWithBall(fallBall, cell))
+//		{
+//			CCPoint cellPos = cell->getPosition();
+//			CCSprite* showcell = CCSprite::createWithSpriteFrame(CCSpriteFrame::create( "SnagForestScene_bg.jpg", CCRectMake(cellPos.x-m_winSize.width/6/2, cellPos.y+m_winSize.width/6/2, m_cellside, m_cellside ) ));
+//			showcell->setPosition(ccp(cellPos.x-c_radius-2.8, cellPos.y));
+//			this->addChild(showcell,10);
+//		}
+//	}
+//}
 
 bool SnagForestLayer::isCollidedWithBall(Ball* fallBall, CCNode *node)
 {
@@ -492,7 +546,7 @@ void SnagForestLayer::createParticleFire()
 	m_emitter->retain();
 	this->addChild(m_emitter,10);
 	m_emitter->setTexture( CCTextureCache::sharedTextureCache()->addImage("fire.png") );
-	m_emitter->setScale(3.0f);
+	//m_emitter->setScale(3.0f);
 	m_emitter->setEmissionRate(800);
 	m_emitter->setSpeed(120);
 	m_emitter->setSpeedVar(0);

@@ -19,6 +19,9 @@
     <Filter Include="Classes\Box2d">
       <UniqueIdentifier>{596af188-18a4-44f8-8ea3-96780c5c1a43}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\tools">
+      <UniqueIdentifier>{b19634a6-d4e9-46cd-967b-b47e043dab7f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -65,6 +68,9 @@
     </ClCompile>
     <ClCompile Include="..\Classes\DevilLayer.cpp">
       <Filter>Classes\GameScene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\PolySprite.cpp">
+      <Filter>Classes\tools</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -116,6 +122,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\MsgTypeForObserver.h">
       <Filter>Classes\GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\PolySprite.h">
+      <Filter>Classes\tools</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

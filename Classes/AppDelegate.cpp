@@ -23,7 +23,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     pDirector->setOpenGLView(pEGLView);
 	    CCSize screenSize = CCEGLView::sharedOpenGLView()->getFrameSize();
     
-    CCSize designSize = CCSizeMake(320, 480);
+    CCSize designSize = CCSizeMake(640, 960);
     
     CCFileUtils* pFileUtils = CCFileUtils::sharedFileUtils();
     

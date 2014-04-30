@@ -142,6 +142,7 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     <ClCompile Include="..\Classes\HelloWorldScene.cpp" />
     <ClCompile Include="..\Classes\LoginLayer.cpp" />
     <ClCompile Include="..\Classes\LoginScene.cpp" />
+    <ClCompile Include="..\Classes\PolySprite.cpp" />
     <ClCompile Include="..\Classes\SettingScene.cpp" />
     <ClCompile Include="..\Classes\SnagForestLayer.cpp" />
     <ClCompile Include="..\Classes\SnagForestScene.cpp" />
@@ -159,6 +160,7 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     <ClInclude Include="..\Classes\LoginLayer.h" />
     <ClInclude Include="..\Classes\LoginScene.h" />
     <ClInclude Include="..\Classes\MsgTypeForObserver.h" />
+    <ClInclude Include="..\Classes\PolySprite.h" />
     <ClInclude Include="..\Classes\SettingScene.h" />
     <ClInclude Include="..\Classes\SnagForestLayer.h" />
     <ClInclude Include="..\Classes\SnagForestScene.h" />

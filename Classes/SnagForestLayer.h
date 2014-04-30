@@ -12,8 +12,8 @@
 #define BALL_LAUNCH_SPEED (7)
 
 const unsigned int c_triSnags = 4;
-const float c_radius = 5.0f;
-const unsigned int c_heightStart = 420;
+const float c_radius = 10.0f;
+const unsigned int c_heightStart = 840;
 
 struct GameEntry;
 class Box2dWorld;
@@ -84,7 +84,7 @@ private:
 
 	bool m_isBallGoingUp;
 
-
+	float m_cellside;
 	CCParticleSystem*    m_emitter;
 };
 #endif // __SNAGFOREST_LAYER_H__
