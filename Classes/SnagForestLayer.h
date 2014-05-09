@@ -40,7 +40,7 @@ public:
 	virtual void ccTouchMoved(CCTouch* touch, CCEvent* event);
 	virtual void ccTouchEnded(CCTouch* touch, CCEvent* event);
 
-	bool SnagForestLayer::initWithEntryID(int entryId);
+	bool initWithEntryID(int entryId);
 
 
 	//virtual void ccTouchesBegan(cocos2d::CCSet *pTouches, cocos2d::CCEvent *pEvent);

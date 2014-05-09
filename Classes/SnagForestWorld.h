@@ -1,9 +1,15 @@
 #ifndef __SNAGFOREST_WORLD_H__
 #define __SNAGFOREST_WORLD_H__
 
+#include "Box2dWorld.h"
+
 class SnagForestWorld: public Box2dWorld
 {
 public :
+    SnagForestWorld();
+	
+	~SnagForestWorld();
+
 	SnagForestWorld(float sizeX,float sizeY)
 	{
 		{
